@@ -1,0 +1,404 @@
+1) DFS:
+
+def DFS(graph,start,dest):
+    stack = list()
+    visited = list()
+    stack.append(start)
+    visited.append(start)
+    print('Visited',start)
+    result = ["Not reachable",list()]
+    while stack:
+        node = stack.pop() 
+        if node==dest:
+            print('Destination node found',node)
+            result[0] = 'Reachable'
+            break
+        print(node,'Is not a destination node')
+        for child in graph[node]:
+            if child not in visited:
+                visited.append(child)
+                stack.append(child)
+    result[1] = visited 
+    return result
+
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F', 'G'],
+    'D': ['B', 'E'],
+    'E': ['B', 'D'],
+    'F': ['C', 'H'],
+    'G': ['C'],
+    'H': ['F']
+}
+result = DFS(graph, "A", "F")
+print(result[0])
+print("Path used to traverse :-" , result[1]) 
+
+2) BFS:
+
+def BFS(graph,start,dest) -> list(): #Input parameters for this method are 
+                                     #1.Graph in which we're going to search for our destination(dest) node
+                                     #2.start which is our start node and dest which is our destination node
+    queue = list()
+    visited = list()
+    queue.append(start)
+    print('Visited',start)
+    result = ["Not reachable",list()]
+    while queue:
+        node = queue.pop(0)
+        visited.append(node)
+        if node==dest:
+            print('Destination node found',node)
+            result[0] = 'Reachable'
+            break
+        print(node,'Is not a destination node')
+        for child in graph[node]:
+            if child not in visited:
+                queue.append(child)
+    result[1] = visited 
+    return result
+
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F', 'G'],
+    'D': ['B', 'E'],
+    'E': ['B', 'D'],
+    'F': ['C', 'H'],
+    'G': ['C'],
+    'H': ['F']
+}
+result = BFS(graph, "A", "C")
+print(result[0])
+print("Path used to traverse :-" , result[1])
+
+3) UCS :
+
+class Graph:
+    def __init__(self):
+        self.edges = {}
+        self.weights = {}
+
+    def neighbors(self, node):
+        return self.edges[node]
+
+    def get_cost(self, from_node, to_node):
+        return self.weights[(from_node + to_node)]
+def ucs(graph, start, goal):
+    visited = set()
+    queue = PriorityQueue()
+    queue.put((0, start))
+
+    while queue:
+        cost, node = queue.get()
+        if node not in visited:
+            visited.add(node)
+
+            if node == goal:
+                return
+            for i in graph.neighbors(node):
+                if i not in visited:
+                    total_cost = cost + graph.get_cost(node, i)
+                    queue.put((total_cost, i))
+
+4) ITERATIVE DEEPENING SEARCH:
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D','E'],
+    "C": ['G'],
+    'D': [],
+    'E': ['F'],
+    'G': [],
+    'F':[]
+}
+
+path = list()
+
+def DFS(currentNode,destination,graph,maxDepth,curList):
+    print("Checking for destination",currentNode)
+    curList.append(currentNode)
+    if currentNode==destination:
+        return True
+    if maxDepth<=0:
+        path.append(curList)
+        return False
+    for node in graph[currentNode]:
+        if DFS(node,destination,graph,maxDepth-1,curList):
+            return True
+        else:
+            curList.pop()
+    return False
+
+def iterativeDDFS(currentNode,destination,graph,maxDepth):
+    for i in range(maxDepth):
+        curList = list()
+        if DFS(currentNode,destination,graph,i,curList):
+            return True
+    return False
+
+if not iterativeDDFS('A','E',graph,4):
+    print("Path is not available")
+else:
+    print("A path exists")
+    print(path.pop())
+
+5) DEPTH LIMIT SEARCH :
+
+graph = {
+    'A':['B','C'],
+    'B':['D','E'],
+    'C':['F','G'],
+    'D':['H','I'],
+    'E':['J','K'],
+    'F':['L','M'],
+    'G':['N','O'],
+    'H':[],
+    'I':[],
+    'J':[],
+    'K':[],
+    'L':[],
+    'M':[],
+    'N':[],
+    'O':[]
+}
+
+def DLS(start,goal,path,level,maxD):
+  print('\nCurrent level-->',level)
+  print('Goal node testing for',start)
+  path.append(start)
+  if start == goal:
+    print("Goal test successful")
+    return path
+  print('Goal node testing failed')
+  if level==maxD:
+    return False
+  print('\nExpanding the current node',start)
+  for child in graph[start]:
+    if DLS(child,goal,path,level+1,maxD):
+      return path
+    path.pop()
+  return False
+  
+  
+  
+start = 'A'
+goal = input('Enter the goal node:-')
+maxD = int(input("Enter the maximum depth limit:-"))
+print()
+path = list()
+res = DLS(start,goal,path,0,maxD)
+if(res):
+    print("Path to goal node available")
+    print("Path",path)
+else:
+    print("No path available for the goal node in given depth limit")
+
+6) BIDIRECTIONAL :
+
+# Python3 program for Bidirectional BFS
+# Search to check path between two vertices
+
+# Class definition for node to
+# be added to graph
+class AdjacentNode:
+	
+	def __init__(self, vertex):
+		
+		self.vertex = vertex
+		self.next = None
+
+# BidirectionalSearch implementation
+class BidirectionalSearch:
+	
+	def __init__(self, vertices):
+		
+		# Initialize vertices and
+		# graph with vertices
+		self.vertices = vertices
+		self.graph = [None] * self.vertices
+		
+		# Initializing queue for forward
+		# and backward search
+		self.src_queue = list()
+		self.dest_queue = list()
+		
+		# Initializing source and
+		# destination visited nodes as False
+		self.src_visited = [False] * self.vertices
+		self.dest_visited = [False] * self.vertices
+		
+		# Initializing source and destination
+		# parent nodes
+		self.src_parent = [None] * self.vertices
+		self.dest_parent = [None] * self.vertices
+		
+	# Function for adding undirected edge
+	def add_edge(self, src, dest):
+		
+		# Add edges to graph
+		
+		# Add source to destination
+		node = AdjacentNode(dest)
+		node.next = self.graph[src]
+		self.graph[src] = node
+
+		# Since graph is undirected add
+		# destination to source
+		node = AdjacentNode(src)
+		node.next = self.graph[dest]
+		self.graph[dest] = node
+		
+	# Function for Breadth First Search
+	def bfs(self, direction = 'forward'):
+		
+		if direction == 'forward':
+			
+			# BFS in forward direction
+			current = self.src_queue.pop(0)
+			connected_node = self.graph[current]
+			
+			while connected_node:
+				vertex = connected_node.vertex
+				
+				if not self.src_visited[vertex]:
+					self.src_queue.append(vertex)
+					self.src_visited[vertex] = True
+					self.src_parent[vertex] = current
+					
+				connected_node = connected_node.next
+		else:
+			
+			# BFS in backward direction
+			current = self.dest_queue.pop(0)
+			connected_node = self.graph[current]
+			
+			while connected_node:
+				vertex = connected_node.vertex
+				
+				if not self.dest_visited[vertex]:
+					self.dest_queue.append(vertex)
+					self.dest_visited[vertex] = True
+					self.dest_parent[vertex] = current
+					
+				connected_node = connected_node.next
+				
+	# Check for intersecting vertex
+	def is_intersecting(self):
+		
+		# Returns intersecting node
+		# if present else -1
+		for i in range(self.vertices):
+			if (self.src_visited[i] and
+				self.dest_visited[i]):
+				return i
+				
+		return -1
+
+	# Print the path from source to target
+	def print_path(self, intersecting_node,
+				src, dest):
+						
+		# Print final path from
+		# source to destination
+		path = list()
+		path.append(intersecting_node)
+		i = intersecting_node
+		
+		while i != src:
+			path.append(self.src_parent[i])
+			i = self.src_parent[i]
+			
+		path = path[::-1]
+		i = intersecting_node
+		
+		while i != dest:
+			path.append(self.dest_parent[i])
+			i = self.dest_parent[i]
+			
+		print("*****Path*****")
+		path = list(map(str, path))
+		
+		print(' '.join(path))
+	
+	# Function for bidirectional searching
+	def bidirectional_search(self, src, dest):
+		
+		# Add source to queue and mark
+		# visited as True and add its
+		# parent as -1
+		self.src_queue.append(src)
+		self.src_visited[src] = True
+		self.src_parent[src] = -1
+		
+		# Add destination to queue and
+		# mark visited as True and add
+		# its parent as -1
+		self.dest_queue.append(dest)
+		self.dest_visited[dest] = True
+		self.dest_parent[dest] = -1
+
+		while self.src_queue and self.dest_queue:
+			
+			# BFS in forward direction from
+			# Source Vertex
+			self.bfs(direction = 'forward')
+			
+			# BFS in reverse direction
+			# from Destination Vertex
+			self.bfs(direction = 'backward')
+			
+			# Check for intersecting vertex
+			intersecting_node = self.is_intersecting()
+			
+			# If intersecting vertex exists
+			# then path from source to
+			# destination exists
+			if intersecting_node != -1:
+				print(f"Path exists between {src} and {dest}")
+				print(f"Intersection at : {intersecting_node}")
+				self.print_path(intersecting_node,
+								src, dest)
+				exit(0)
+		return -1
+
+# Driver code
+if __name__ == '__main__':
+	
+	# Number of Vertices in graph
+	n = 15
+	
+	# Source Vertex
+	src = 0
+	
+	# Destination Vertex
+	dest = 14
+	
+	# Create a graph
+	graph = BidirectionalSearch(n)
+	graph.add_edge(0, 4)
+	graph.add_edge(1, 4)
+	graph.add_edge(2, 5)
+	graph.add_edge(3, 5)
+	graph.add_edge(4, 6)
+	graph.add_edge(5, 6)
+	graph.add_edge(6, 7)
+	graph.add_edge(7, 8)
+	graph.add_edge(8, 9)
+	graph.add_edge(8, 10)
+	graph.add_edge(9, 11)
+	graph.add_edge(9, 12)
+	graph.add_edge(10, 13)
+	graph.add_edge(10, 14)
+	
+	out = graph.bidirectional_search(src, dest)
+	
+	if out == -1:
+		print(f"Path does not exist between {src} and {dest}")
+
+# This code is contributed by Nirjhari Jankar
+
+
